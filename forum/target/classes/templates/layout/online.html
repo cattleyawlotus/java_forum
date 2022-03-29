@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="description" content="Programming forum about Java powered by Spring Framework"/>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <title>Internet Forum</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+</head>
+<body>
+    <nav style="background-color:#6cb27c">
+        <div class="nav-wrapper">
+            <div class="container">
+                <ul id="nav-left" class="left hide-on-med-and-down">
+                    <li><a th:href="@{'/topics/all/1'}">All</a></li>
+                    <li><a th:href="@{'/topics/se/1'}">Java SE</a></li>
+                    <li><a th:href="@{'/topics/ee/1'}">Java EE</a></li>
+                    <li><a th:href="@{'/topics/mbs/1'}">MyBatis</a></li>
+                    <li><a th:href="@{'/topics/spring/1'}">Spring</a></li>
+                    <li><a th:href="@{'/topics/web/1'}">Web</a></li>
+                    <li><a th:href="@{'/topics/other/1'}">其他</a></li>
+                </ul>
+                <ul id="nav-right" class="right hide-on-med-and-down">
+                    <li><a th:href="@{'/profile/' + ${user.getId()}}" th:text="${user.getUsername()}">简介</a></li>
+                    <li><a th:href="@{'/addTopic'}">发表</a></li>
+                    <li><a th:href="@{'/message'}">站内信<span class="new badge" th:text="${newMessage}">2</span></a></li>
+                    <li><a th:href="@{'/rank'}">排行榜</a></li>
+                    <li><a th:href="@{'/logout'}">登出</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main layout:fragment="content">
+        <p>Default content</p>
+    </main>
+    <footer class="page-footer" style="background-color:#6cb27c; position:fixed;bottom: 0;width:100%">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">JAVA FORUM</h5>
+                    <p class="white-text">JAVA交流论坛</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Links</h5>
+                    <ul>
+                        <li><a class="white-text" th:href="@{'/aboutUs'}">关于我们</a></li>
+                        <li><a class="white-text">2021年JAVAEE作业</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script type="text/javascript"  src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</body>
+</html>

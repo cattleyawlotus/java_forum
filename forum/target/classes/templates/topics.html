@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Topics | JF</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        #box {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        nav {
+            flex: 0 0 auto;
+        }
+
+        .maincon {
+            flex: 1 0 auto;
+        }
+
+        footer {
+            flex: 0 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div id="box">
+    <nav style="background-color:#6cb27c">
+        <div class="nav-wrapper">
+            <div class="container">
+                <ul id="nav-left" class="left hide-on-med-and-down">
+                    <li><a th:href="@{'/topics/all/1'}">All</a></li>
+                    <li><a th:href="@{'/topics/se/1'}">Java SE</a></li>
+                    <li><a th:href="@{'/topics/ee/1'}">Java EE</a></li>
+                    <li><a th:href="@{'/topics/mbs/1'}">MyBatis</a></li>
+                    <li><a th:href="@{'/topics/spring/1'}">Spring</a></li>
+                    <li><a th:href="@{'/topics/web/1'}">Web</a></li>
+                    <li><a th:href="@{'/topics/other/1'}">其他</a></li>
+                </ul>
+                <ul id="nav-right" class="right hide-on-med-and-down">
+                    <li><a th:href="@{'/profile/' + ${user.getId()}}" th:text="${user.getUsername()}">简介</a></li>
+                    <li><a th:href="@{'/addTopic'}">发表</a></li>
+                    <li><a th:href="@{'/message'}">站内信<span class="new badge" th:text="${newMessage}">2</span></a></li>
+                    <li><a th:href="@{'/rank'}">排行榜</a></li>
+                    <li><a th:href="@{'/logout'}">登出</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section class="maincon">
+        <article class="container" style="padding: 3% 0 2%;">
+            <header class="row">
+                <blockquote class="flow-text left" th:text="${header}">Header</blockquote>
+                <blockquote class="flow-text right" th:text="|话题数量： | + ${topicsTotalNum}">Number of topics</blockquote>
+            </header>
+            <section class="row">
+                <div class="col s12">
+                    <table class="striped bordered centered" th:if="${topics.size() != 0}">
+                        <thead>
+                        <tr>
+                            <th>评论数</th>
+                            <th>标题</th>
+                            <th>作者</th>
+                            <th>创建时间</th>
+                            <th>Enter</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="topic : ${topics}">
+                            <tr>
+                                <td th:text="${answerDao.countAnswersByTopic_Id(topic.getId())}">Number of answers</td>
+                                <td th:text="${topic.getTitle()}">Topic's title</td>
+                                <td>
+                                    <a th:href="@{'/profile/' + ${topic.getIdUser()}}">
+                                        <div class="chip" th:text="${userDao.getUsernameById(topic.getIdUser())}">
+                                            Topic's
+                                            author
+                                        </div>
+                                    </a>
+                                </td>
+
+                                <td th:text="${topic.displayParsedCreatedDate()}">Topic's created date</td>
+                                <td>
+                                    <a th:href="@{'/topic/' + ${topic.getId()}}" class="btn btn-floating pulse">
+                                        <i class="material-icons">arrow_forward</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                    <ul class="pagination center">
+                        <li class="disabled"><a th:href="@{'/topics/'+${category}+'/'+ ${currentPage-1}}"
+                                                th:if="${isUserTopicPage==false}"><i class="material-icons"
+                                                                                     th:if="${currentPage>1}">chevron_left</i></a>
+                        </li>
+                        <li class="disabled"><a th:href="@{'/topics/user/' + ${user.getId()} + '_'+ ${currentPage-1}}"
+                                                th:if="${isUserTopicPage==true}"><i class="material-icons"
+                                                                                    th:if="${currentPage>1}">chevron_left</i></a>
+                        </li>
+
+                        <li class="active"><a th:href="@{'/topics/'+${category}+'/'+ ${currentPage}}"
+                                              th:text="${currentPage}">page</a></li>
+
+                        <!-- <li class="active"><a th:href="@{'/topics/'+${category}+'/'+ ${page}}" th:if="${currentPage==page}" th:text="${page}">page</a></li>
+                        <li class="waves-effect"><a th:href="@{'/topics/'+${category}+'/'+ ${page}}" th:if="${currentPage!=page}" th:text="${page}">page</a></li> -->
+
+                        <!-- <li class="active"><a th:href="@{'/topics/'+${category}+'/2'}" th:if="${currentPage==2}">2</a></li>
+                        <li class="waves-effect"><a th:href="@{'/topics/'+${category}+'/2'}" th:if="${currentPage!=2}">2</a></li>
+
+                        <li class="active"><a th:href="@{'/topics/'+${category}+'/3'}" th:if="${currentPage==3}">3</a></li>
+                        <li class="waves-effect"><a th:href="@{'/topics/'+${category}+'/3'}" th:if="${currentPage!=3}">3</a></li>
+
+                        <li class="active"><a th:href="@{'/topics/'+${category}+'/4'}" th:if="${currentPage==4}">4</a></li>
+                        <li class="waves-effect"><a th:href="@{'/topics/'+${category}+'/4'}" th:if="${currentPage!=4}">4</a></li> -->
+
+                        <li class="waves-effect"><a th:href="@{'/topics/'+${category}+'/'+ ${currentPage+1}}"
+                                                    th:if="${isUserTopicPage==false}"><i class="material-icons"
+                                                                                         th:if="${hasNext}">chevron_right</i></a>
+                        </li>
+                        <li class="waves-effect"><a th:href="@{'/topics/user/'+${user.getId()}+'_'+ ${currentPage+1}}"
+                                                    th:if="${isUserTopicPage==true}"><i class="material-icons"
+                                                                                        th:if="${hasNext}">chevron_right</i></a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </article>
+    </section>
+    <footer class="page-footer" style="background-color:#6cb27c;">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">JAVA FORUM</h5>
+                    <p class="white-text">JAVA交流论坛</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Links</h5>
+                    <ul>
+                        <li><a class="white-text" th:href="@{'/aboutUs'}">关于我们</a></li>
+                        <li><a class="white-text">2021年JAVAEE作业</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

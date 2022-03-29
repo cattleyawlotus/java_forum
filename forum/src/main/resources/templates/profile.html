@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     >
+<head>
+    <title th:text="${otherUser.getUsername() + ' | JF'}">Title of profile view</title>
+    <meta charset="utf-8"/>
+    <meta name="description" content="Programming forum about Java powered by Spring Framework"/>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html,body{
+            height: 100%;
+        }
+        #box{
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        nav{
+            flex: 0 0 auto;
+        }
+        .maincon{
+            flex: 1 0 auto;
+        }
+        footer{
+            flex: 0 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div id="box">
+    <nav style="background-color:#6cb27c">
+        <div class="nav-wrapper">
+            <div class="container">
+                <ul id="nav-left" class="left hide-on-med-and-down">
+                    <li><a th:href="@{'/topics/all/1'}">All</a></li>
+                    <li><a th:href="@{'/topics/se/1'}">Java SE</a></li>
+                    <li><a th:href="@{'/topics/ee/1'}">Java EE</a></li>
+                    <li><a th:href="@{'/topics/mbs/1'}">MyBatis</a></li>
+                    <li><a th:href="@{'/topics/spring/1'}">Spring</a></li>
+                    <li><a th:href="@{'/topics/web/1'}">Web</a></li>
+                    <li><a th:href="@{'/topics/other/1'}">其他</a></li>
+                </ul>
+                <ul id="nav-right" class="right hide-on-med-and-down">
+                    <li><a th:href="@{'/profile/' + ${user.getId()}}" th:text="${user.getUsername()}">简介</a></li>
+                    <li><a th:href="@{'/addTopic'}">发表</a></li>
+                    <li><a th:href="@{'/message'}">站内信<span class="new badge" th:text="${newMessage}">2</span></a></li>
+                    <li><a th:href="@{'/rank'}">排行榜</a></li>
+                    <li><a th:href="@{'/logout'}">登出</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<main class="maincon">
+    <article class="container" style="padding: 3% 0 2%;">
+        <header class="row">
+            <div class="col s12">
+                <blockquote class="flow-text left" th:text="${otherUser.getUsername()} + |&apos; s profile|">Profile
+                </blockquote>
+                <blockquote class="flow-text right" th:text="|Points: | + ${points}">Commitment</blockquote>
+            </div>
+        </header>
+        <section class="row">
+            <div class="col s12">
+            			<span class="col s6">
+                           &nbsp;&nbsp;&nbsp;&nbsp;<span
+                                th:text="${otherUser.displayContentOfOptional()}">Introduction</span>
+                    </span>
+                <span th:if="${user.getId() != otherUser.getId() and !isFollowed}" class="chip right">
+						<form th:action="@{'/follow/'+${user.getId()}+'_'+${otherUser.getId()}}" method="post">
+							<input type="hidden" name="action" th:value="useful"/>
+								<button class="chip left" style="background-color: #37b7ab;">关注</button>
+						</form>
+					</span>
+                <span th:if="${user.getId() != otherUser.getId() and isFollowed}" class="chip right">
+						<form>
+							<input type="hidden" name="action" th:value="useful"/>
+								<button class="chip left" style="background-color: #37b7ab;">已关注</button>
+						</form>
+					</span>
+            </div>
+        </section>
+        <section class="row">
+            <div class="col s12 m6">
+                <ul class="collection">
+                    <li class="collection-item center">Personal data</li>
+                    <li class="collection-item">
+                            <span class="badge">
+                                <span th:text="${otherUser.getUsername()}">Nick</span>
+                            </span>用户名:
+                    </li>
+                    <li class="collection-item">
+                            <span class="badge">
+                                <span th:text="${otherUser.displayParsedDate()}">Created date</span>
+                            </span>注册时间:
+                    </li>
+                    <li class="collection-item">
+                        <a th:href="@{'/fans/' + ${otherUser.getId()}}" style="display: block; color: black">
+                        			<span class="badge">
+                                		<span th:text="${followNums}">Created date</span>
+                            		</span>粉丝:
+                        </a>
+                        <a th:if="${user.getId() != otherUser.getId()}"
+                           th:href="@{'/commonfans/' + ${otherUser.getId()} + '_' + ${user.getId()}}"
+                           style="display: block; color: #26a69a">
+                        			<span class="left">
+                                		<span th:text="${user.getUsername()} + 与 + ${otherUser.getUsername()} + 有 + ${commonFansNum} + 个共同粉丝"
+                                              class="left">Created date</span>
+                            		</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col s12 m6">
+                <ul class="collection">
+                    <li class="collection-item center strong">Activity</li>
+                    <li class="collection-item">
+                        <a th:href="@{'/topics/user/' + ${otherUser.getId()}+'_'+'1'}"
+                           style="display: block; color: #26a69a">
+                                <span class="badge">
+                                    <span th:text="${numberOfTopics}"></span>
+                                </span>Topics:
+                        </a>
+                    </li>
+                    <li class="collection-item">
+                        <a th:href="@{'/answers/' + ${otherUser.getId()}}" style="display: block; color: #26a69a">
+                                <span class="badge">
+                                    <span th:text="${numberOfAnswers}"></span>
+                                </span>Answers:
+                        </a>
+                    </li>
+                    <li class="collection-item">
+                        <a th:href="@{'/answers/useful/' + ${otherUser.getId()}}"
+                           style="display: block; color: #26a69a">
+                                <span class="badge">
+                                    <span th:text="${numberOfHelped}"></span>
+                                </span>Helped:
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <header class="row">
+                <div class="col s12">
+                    <blockquote class="flow-text left" th:text="|照片墙 |">照片墙</blockquote>
+                </div>
+            </header>
+
+            <div class="row">
+                <th:block th:each="imgUrl:${myImgs}">
+                    <div class="col s12 m6">
+                        <div class="card">
+                            <div class="card-image">
+                                <img th:src="${imgUrl}"></img>
+                            </div>
+                            <div class="card-action">
+                                <a th:href="${imgUrl}">点击查看大图</a>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+                <a th:if="${isHasMoreImg}" th:href="@{'/imageWall/'+${otherUser.getId()}}">查看更多的照片...</a>
+            </div>
+
+            <header class="row" th:if="${switch}">
+                <div class="col s12">
+                    <blockquote class="flow-text left" th:text="|上传照片 |">上传照片</blockquote>
+                </div>
+            </header>
+
+            <form th:action="@{'/upload'}" method="post" enctype="multipart/form-data" th:if="${switch}">
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>选择照片</span>
+                        <input type="file" name="file"></input>
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text"></input>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 center">
+                        <button class="btn waves-effect waves-light btn-large"
+                                type="submit" name="add">上传
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </article>
+</main>
+
+    <footer class="page-footer" style="background-color:#6cb27c;">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">JAVA FORUM</h5>
+                    <p class="white-text">JAVA交流论坛</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Links</h5>
+                    <ul>
+                        <li><a class="white-text" th:href="@{'/aboutUs'}">关于我们</a></li>
+                        <li><a class="white-text">2021年JAVAEE作业</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
